@@ -1,0 +1,143 @@
+{
+    Telemetry telemetry;
+    
+    // Cria as matrizes, "mat" princiapal e "rusult" que é exibida na Drive Station
+    Mat mat, result = null;
+    
+    // Variavel para guardar o resultado (posicao do elemento)
+    private Location location;
+    
+    public SquareLocationDetectorOpenCV(Telemetry t) { 
+        telemetry = t;
+        mat = new Mat();
+    }
+    
+    // Aqui fazemos o processamento a cada frame do video
+    @Override
+    public Mat processFrame(Mat input) {
+        
+        // Primeiro convertemos o video para em escala de cinza e inserimos no mat principal 
+        Imgproc.cvtColor(input, mat, Imgproc.COLOR_BGR2HLS);
+        
+        /* 
+        Agora criamos o filtro, é a aqui que definimos a faixa de cor, saturacao e brilho do elemento que vamos utilizar.
+        Essa é uma escala HLS (Hue, Lightness e Saturation ou cor, brilho e saturacao), e os valores sao de 0 a 255.
+        Esses valores sao de exemplo para deteccao do cubo amarelo.
+        */
+        Scalar lower = new Scalar (90, 85, 75);
+        Scalar upper = new Scalar (120, 200, 210);
+        
+        Core.inRange(mat, lower, upper, mat);
+        
+        // As linhas a seguir sao para melhorar a qualidade da imagem, para facilitar a deteccao
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
+   
+        Imgproc.erode(mat, mat, kernel);
+        Imgproc.dilate(mat, mat, kernel);
+        Imgproc.GaussianBlur(mat, mat, new Size(3, 3), 10);
+        
+        Imgproc.erode(mat, mat, kernel);
+        Imgproc.dilate(mat, mat, kernel);
+        Imgproc.GaussianBlur(mat, mat, new Size(3, 3), 10);
+
+        Imgproc.threshold(mat, mat, 20, 255, Imgproc.THRESH_BINARY);
+        
+        
+        // Agora criamos uma lista de todos os segmentos de pixel para criar um contorno dos elemento
+        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Mat temp = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
+        Imgproc.findContours(mat, contours, temp, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_NONE);
+        
+        //telemetry.addLine(String.valueOf(contours));
+        //telemetry.update();
+        
+        if (result == null)  result = new Mat(); 
+        else result.release(); 
+        
+        // definimos "NOT_FOUND" como padrao caso nao aja elementos validos na tela 
+        location = Location.NOT_FOUND;
+        
+        // caso tenha elementos, procuramos o maio elemento na tela
+        if (contours.size() > 0){
+            double maxVal = -1;
+            int maxValIdx = -1;
+            
+            for (int contourIdx = 0; contourIdx < contours.size(); contourIdx++) {
+                double contourArea = Imgproc.contourArea(contours.get(contourIdx));
+                
+                // Definimos como um elemento valido, se o elemento tiver uma area maior que 500
+                if (contourArea > 500){
+                    maxVal = contourArea;
+                    maxValIdx = contourIdx;
+                }
+                // Se nao for maior, retiramos esse elemento da lista
+                else if ((contourArea <= 500) && (maxValIdx > -1)) {
+                    contours.remove(contourIdx);
+                }
+            }
+            
+            // Agora sobre pomos a imagem do processo com a imagem real e colocamos em "result" para visualizarmos
+            Core.bitwise_and(input, input, result, mat);        
+            
+            // Descomente esta linha se quiser visualizar os contornos
+            //Imgproc.drawContours(result, contours, -1, new Scalar(255, 0, 0), 3);
+            
+            mat.release();
+            
+            // Se ainda houver algum elemento na lista criamos um retangulo que em volta do maior elemento
+            if (maxValIdx >= 0) {
+                Rect biggestRect = Imgproc.boundingRect(new MatOfPoint(contours.get(maxValIdx).toArray()));
+            
+                Point supDir = new Point (biggestRect.x, biggestRect.y);
+                Point botEsc = new Point (biggestRect.x + biggestRect.width, biggestRect.y + biggestRect.height);
+            
+                Imgproc.rectangle(result, supDir, botEsc, new Scalar(0,255,0), 5);
+            
+                setLocation(biggestRect.x + biggestRect.width / 2);
+            }
+            
+        }
+        // Se nao houver nenhum elemento na tela apenas exiba a imagem
+        else {
+            Core.bitwise_and(input, input, result, mat);        
+            mat.release();
+        }
+        
+        // Desenhamos linha na tela para tem um feedback visual do resultado
+        switch (this.getLocation()) {
+            case LEFT://LEFT ~176
+                Imgproc.line(result, new Point(160, 190), new Point(160, 230), new Scalar(0,255,255), 3);
+                break;
+            case RIGHT://RIGHT ~515
+                Imgproc.line(result, new Point(490, 190), new Point(490, 230), new Scalar(0,255,255), 3);
+                break;
+            case CENTER://CENTER ~327
+                Imgproc.line(result, new Point(312, 190), new Point(312, 230), new Scalar(0,255,255), 3);
+                break;    
+            case NOT_FOUND:
+                Imgproc.line(result, new Point(200, 180), new Point(400, 290), new Scalar(0,255,255), 3);
+                Imgproc.line(result, new Point(400, 180), new Point(200, 290), new Scalar(0,255,255), 3);
+        }
+        
+        // Por fim, retornamos "result" para visualizacao na Drive Station
+        return result;
+    }
+    
+    // Aqui definimos os limites que definem em qual posicao o objeto esta 
+    private void setLocation(int valX) {
+        if (valX < 252) {
+            location = Location.LEFT;
+        }
+        else if (valX > 422){
+            location = Location.RIGHT;
+        }
+        else {
+            location = Location.CENTER;
+        }
+    }
+    
+    // Usamos isso para pegar a posicao/resultado de deteccao
+    public Location getLocation() {
+        return location;
+    }
+}
