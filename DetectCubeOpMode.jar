@@ -14,51 +14,45 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous
 public class DetectCubeOpMode extends LinearOpMode {
+    // Se estiver usando a câmera do telefone ao inves da webcam, faça as substituições pelas linhas comentadas
     
-    // Cria uma variavel que representa a Webcam 
+    // Cria uma variavel que representa a webcam
     OpenCvWebcam webcam;
-    
-    // Se estiver usando a camera do telefone, comente a linha a cima e subistitua por esta:
-    // OpenCvCamera camera;
+    //OpenCvCamera camera;
     
     @Override
     public void runOpMode() throws InterruptedException {
         
         int cameraMonitorViewId = this.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         
-        
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        
-        // Caso utilize a camera do telefone substitua a linha a cima por esta:
         //camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         
         // Ativa o processamento do video com o Pipeline que criamos
         SquareLocationDetectorOpenCV detector = new SquareLocationDetectorOpenCV(telemetry);
         webcam.setPipeline(detector);
         
-        // Tempo limite para obtenção de permissão de configuracao. Pronto antes de abrir.
+        // Tempo limite para obtenção de permissão de configuração.
         webcam.setMillisecondsPermissionTimeout(2500); 
         
-        // Abre e configura a camera/webcam
+        // Abre e configura a câmera/webcam
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
             {
                 /*
-                Parametros 1 e 2: Resolução da câmera
-                (Resolucoe comuns)
+                Parametros 1 e 2: Resolução da câmera    
                 320 x 240
                 640 x 480
                 1280 x 720
                 1920 x 1080
                 
-                Paramentro 3: Orientacao
-                UPRIGHT: retrato ou webcam em orientação normal 
+                Paramentro 3: Orientação
+                UPRIGHT: retrato (ou webcam em orientação normal)
                 SIDEWAYS_LEFT: paisagem para a esquerda
                 SIDEWAYS_RIGHT; paisagem para a direita
                 */
-                
                 webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);        
             }
 
@@ -71,7 +65,7 @@ public class DetectCubeOpMode extends LinearOpMode {
         // Inicia o autonomo
         waitForStart();
         
-        // Para a deteccao
+        // Para a detecção
         webcam.stopStreaming();
         
         while (opModeIsActive()) {
