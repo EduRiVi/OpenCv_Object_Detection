@@ -69,7 +69,7 @@ public class DetectCubeOpMode extends LinearOpMode {
         webcam.stopStreaming();
         
         while (opModeIsActive()) {
-            // Pega o resultado da deteccao e imprime na tela o resultado
+            // Pega o resultado da detecção e imprime na tela o resultado
             switch (detector.getLocation()) {
                 case LEFT:
                     telemetry.addLine("LEFT");
