@@ -1,4 +1,4 @@
-// ACESSE https://github.com/OpenFTC/EasyOpenCV PARA TER MAIS INFORMAÇÕES SOBRE OS METODOS E FUNCÕES DO Easy OpenCV USADOS NESTE CÓDIGO
+// ACESSE https://github.com/OpenFTC/EasyOpenCV/blob/master/doc/user_docs/camera_initialization_overview.md PARA TER MAIS INFORMAÇÕES SOBRE OS METODOS E FUNCÕES DO Easy OpenCV USADOS NESTE CÓDIGO
 
 package org.firstinspires.ftc.teamcode;
 
