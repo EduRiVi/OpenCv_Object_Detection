@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous
 public class DetectCubeOpMode extends LinearOpMode {
-    // Se estiver usando a câmera do telefone ao inves da webcam, faça as substituições pelas linhas comentadas
+    // Se estiver usando a câmera do telefone ao inves da webcam, substitua as linhas 23 e 32 pelas linha comentadas e as mencoes de "webcam" por "camera" 
     
     // Cria uma variavel que representa a webcam
     OpenCvWebcam webcam;
@@ -27,6 +27,7 @@ public class DetectCubeOpMode extends LinearOpMode {
         
         int cameraMonitorViewId = this.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         
+        // "Webcam 1" é o nome padrao da webcam. Caso tenha mudado esse nome, substitua "Webcam 1" por esse nome
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         //camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         
@@ -35,7 +36,7 @@ public class DetectCubeOpMode extends LinearOpMode {
         webcam.setPipeline(detector);
         
         // Tempo limite para obtenção de permissão de configuração.
-        webcam.setMillisecondsPermissionTimeout(2500); 
+        webcam.setMillisecondsPermissionTimeout(2500);
         
         // Abre e configura a câmera/webcam
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
