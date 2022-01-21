@@ -42,7 +42,7 @@ public class SquareLocationDetectorOpenCV extends OpenCvPipeline {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_BGR2HLS);
         
         /* 
-        Agora criamos o filtro, é a aqui que definimos a faixa de cor, saturação e brilho do elemento que vamos utilizar.
+        Agora criamos o filtro. É a aqui que definimos a faixa de cor, saturação e brilho do elemento que vamos utilizar.
         Essa é uma escala HLS (Hue, Lightness e Saturation), e os valores são de 0 a 255.
         Esses valores são de exemplo para detecção do cubo amarelo, mas deve ser ajustado de acordo com a imagem da camera.
         */
