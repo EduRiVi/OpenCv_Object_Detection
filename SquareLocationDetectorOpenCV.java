@@ -44,7 +44,6 @@ public class SquareLocationDetectorOpenCV extends OpenCvPipeline {
         /* 
         Agora criamos o filtro. É a aqui que definimos a faixa de cor, saturação e brilho do elemento que vamos utilizar.
         Essa é uma escala HLS (Hue, Lightness e Saturation), e os valores são de 0 a 255.
-        Esses valores são de exemplo para detecção do cubo amarelo, mas deve ser ajustado de acordo com a imagem da camera.
         */
         Scalar lower = new Scalar (90, 85, 75);
         Scalar upper = new Scalar (120, 200, 210);
