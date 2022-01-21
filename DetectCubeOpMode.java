@@ -27,7 +27,7 @@ public class DetectCubeOpMode extends LinearOpMode {
         
         int cameraMonitorViewId = this.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         
-        // "Webcam 1" é o nome padrao da webcam. Caso tenha mudado esse nome, substitua "Webcam 1" por esse nome
+        // "Webcam 1" é o nome padrão da webcam. Caso tenha mudado esse nome, substitua "Webcam 1" por esse nome
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         //camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         
